@@ -1,112 +1,73 @@
-class Car:
-    def __init__(self, make, model, year, available=True):
-        self.make = make
-        self.model = model
-        self.year = year
-        self.available = available
+car1 = {"id": 1, "brand": "BMW", "rent": 20, "available": True}
+car2 = {"id": 2, "brand": "Mercedes", "rent": 30, "available": True}
+car3 = {"id": 3, "brand": "Audi", "rent": 40, "available": True}
 
-    def __str__(self):
-        return f"{self.year} {self.make} {self.model}"
+cars = {"car1": car1, "car2": car2, "car3": car3}
+customers = []
+earnings = 0
 
+while True:
+    print("\nWelcome to the Car Rental Shop!")
+    print("Please select an option:")
+    print("1. View available cars")
+    print("2. Rent a car")
+    print("3. Show Customers Information")
+    print("4. Show earnings")
+    print("5. Return Car")
+    print("6. Exit")
 
-class Customer:
-    def __init__(self, name, license_number):
-        self.name = name
-        self.license_number = license_number
+    option = int(input("Enter your choice: "))
 
-    def __str__(self):
-        return f"{self.name} (License: {self.license_number})"
+    if option == 1:
+        print("\nAvailable cars:")
+        for i, car in cars.items():
+            if car["available"]:
+                print(f"Car ID: {car['id']}, Brand: {car['brand']}, Hourly Rate: ₹{car['rent']}")
 
+    elif option == 2:
+        car_id = int(input("Enter car ID: "))
+        hours = int(input("For how many hours do you want to rent the car? "))
 
-class RentalSystem:
-    def __init__(self):
-        self.cars = []
-        self.customers = []
-        self.rented_cars = {}
-
-    def add_car(self, car):
-        self.cars.append(car)
-
-    def add_customer(self, customer):
-        self.customers.append(customer)
-
-    def rent_car(self, customer, car):
-        if car.available:
-            car.available = False
-            self.rented_cars[customer] = car
-            return f"{customer.name} rented {car}."
+        for car_name, car in cars.items():
+            if car["id"] == car_id and car["available"]:
+                name = input("Enter your name:")
+                customer_info = {
+                    "c_name": name,
+                    "car_id": car["id"],
+                    "rented_car": car["brand"],
+                    "hours": hours,
+                    "bill_amount": hours * car["rent"]
+                }
+                customers.append(customer_info)
+                print(f"{name} has rented a car for {hours} hours. Your Bill Amount: ₹{customer_info['bill_amount']}")
+                car["available"] = False
+                earnings= earnings+ customer_info['bill_amount']
+                break
         else:
-            return "Sorry, the car is not available for rent."
+            print("Car not available.")
 
-    def return_car(self, customer):
-        if customer in self.rented_cars:
-            returned_car = self.rented_cars.pop(customer)
-            returned_car.available = True
-            return f"{customer.name} returned {returned_car}."
-        else:
-            return f"{customer.name} did not rent any car."
+    elif option == 3:
+        print("\nCustomers Information:")
+        for customer in customers:
+            print(f"Customer Name: {customer['c_name']}, Car ID: {customer['car_id']}, Rented Car: {customer['rented_car']}, Hours: {customer['hours']}, Bill Amount: ₹{customer['bill_amount']}")
 
-
-def simulate_conversation():
-    rental_system = RentalSystem()
-
-    car1 = Car("Toyota", "Camry", 2022)
-    car2 = Car("Honda", "Civic", 2021)
-    car3 = Car("Ford", "Mustang", 2020)
-
-    customer1 = Customer("John Doe", "AB123456")
-    customer2 = Customer("Jane Smith", "CD789012")
-
-    rental_system.add_car(car1)
-    rental_system.add_car(car2)
-    rental_system.add_car(car3)
-
-    rental_system.add_customer(customer1)
-    rental_system.add_customer(customer2)
-
-    print("Owner: Welcome to the Car Rental System!")
-
-    while True:
-        action = input("\nCustomer: What would you like to do? (rent/return/exit): ").lower()
-
-        if action == 'exit':
-            print("Owner: Thank you for using our Car Rental System. Have a great day!")
-            break
-
-        elif action == 'rent':
-            customer_name = input("Customer: Please enter your name: ")
-            license_number = input("Customer: Please enter your license number: ")
-
-            customer = Customer(customer_name, license_number)
-
-            available_cars = [car for car in rental_system.cars if car.available]
-            if not available_cars:
-                print("Owner: Sorry, there are no cars available for rent at the moment.")
-                continue
-
-            print("Owner: Here are the available cars:")
-            for i, car in enumerate(available_cars, 1):
-                print(f"{i}. {car}")
-
-            car_index = int(input("Customer: Please enter the number of the car you want to rent: ")) - 1
-
-            if 0 <= car_index < len(available_cars):
-                selected_car = available_cars[car_index]
-                result = rental_system.rent_car(customer, selected_car)
-                print(f"Owner: {result}")
+    elif option == 4:
+        print(f"Total earnings: ₹{earnings}")
+        
+    elif option == 5:
+        return_id= int(input("Enter Car ID you want to retun:"))
+        for car_name, car in cars.items():
+            if return_id == car["id"] and not car['available']:
+                customers.remove(customer)
+                car['available']= True
+                print("Car returned Successfully.")
+                break
             else:
-                print("Owner: Invalid car selection. Please try again.")
+                print("Car not returned.")
 
-        elif action == 'return':
-            customer_name = input("Customer: Please enter your name: ")
-            license_number = input("Customer: Please enter your license number: ")
-
-            customer = Customer(customer_name, license_number)
-            result = rental_system.return_car(customer)
-            print(f"Owner: {result}")
-
-        else:
-            print("Owner: Invalid action. Please enter 'rent', 'return', or 'exit'.")
+    elif option == 6:
+        print("Thank You for using our services.")
+        break
 
 # Run the conversation simulation
 simulate_conversation()
